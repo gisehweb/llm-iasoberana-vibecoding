@@ -53,8 +53,19 @@ curl http://localhost:11434/api/tags
 ```
 
 ## Bitácora de Vibe Coding
-(registro del proceso de generación de código)
 
+Se verificó el funcionamiento de la infraestructura local utilizando Podman y Ollama.
+
+Comandos utilizados:
+
+```bash
+podman start ollama
+curl http://localhost:11434
+podman exec -it ollama ollama run smollm
+```
+
+Durante las pruebas se comprobó el funcionamiento del contenedor y la disponibilidad de la API local.
 
 ## Reflexión Soberana
-(análisis crítico sobre soberanía tecnológica)
+
+Trabajar con herramientas libres y procesamiento local permitió mantener el control de los datos utilizados durante el desarrollo del trabajo, evitando enviarlos a servicios externos o nubes privativas. Esto representa una ventaja en términos de privacidad, independencia tecnológica y transparencia. Como desventaja, observamos que el rendimiento depende directamente del hardware disponible y que la configuración inicial requiere más tiempo y conocimientos técnicos que utilizar plataformas ya configuradas en la nube.
