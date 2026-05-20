@@ -405,3 +405,7 @@ La incorporación de este sistema de depuración facilitó enormemente el análi
 Estas pruebas permitieron comprender mejor cómo pequeños cambios en el prompting afectan directamente el comportamiento del modelo y la calidad de la salida generada.
 
 De esta manera, el desarrollo final del script fue resultado de un proceso iterativo utilizando múltiples asistentes de IA, manteniendo siempre el enfoque de Vibe Coding y experimentación progresiva mediante prompting.
+
+## Ejemplo de salida del script:
+<img width="1205" height="392" alt="image" src="https://github.com/user-attachments/assets/a8a6d837-1a47-4213-9cd2-85c0a1f2b7dd" />
+
