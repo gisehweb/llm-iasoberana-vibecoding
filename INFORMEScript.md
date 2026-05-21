@@ -287,4 +287,10 @@ También permitió comprender mejor conceptos relacionados con:
 * manejo de excepciones,
 * y automatización mediante Python utilizando únicamente librerías estándar.
 
+feature/scripting
 Más allá del resultado técnico, la experiencia sirvió para entender que el desarrollo asistido por IA sigue requiriendo supervisión humana, análisis crítico y toma de decisiones arquitectónicas durante todo el proceso.
+
+De esta manera, el desarrollo final del script fue resultado de un proceso iterativo utilizando múltiples asistentes de IA, manteniendo siempre el enfoque de Vibe Coding y experimentación progresiva mediante prompting.
+
+
+main
