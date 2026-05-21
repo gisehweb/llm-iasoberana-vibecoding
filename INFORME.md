@@ -38,6 +38,8 @@ echo "Este es un texto de prueba para verificar el resumen automático." > prueb
 python3 resumidor.py prueba.txt --host localhost --model smollm
  Resultado: el script se conectó a Ollama y generó un resumen de 3 líneas.
 
+En la siguiente imagen se puede observar parte del proceso:
+![Historial de commits y archivos](img/git_log.PNG)
 
 ## Reflexión Soberana
 Procesar información localmente con Ollama en Podman mostró ventajas claras:
