@@ -1,254 +1,63 @@
-# Informe de Desarrollo y Depuración del Script `resumidor.py`
-
-# Conversaciones con las IA:
-
-https://huggingface.co/chat/r/ftJhSr0?leafId=da4bfee8-6a6d-4747-bf18-4a7096684d61
-
-https://chat.deepseek.com/share/sxkodlxhyw8kdkkbie
-
+# Fase 2: Vibe Coding y Automatización
 
 ## Introducción
 
-Durante esta actividad se trabajó utilizando el enfoque de Vibe Coding, donde la inteligencia artificial fue utilizada como asistente para diseñar, mejorar y depurar un script en Python capaz de comunicarse con una instancia local de Ollama mediante HTTP.
+El objetivo de esta actividad fue desarrollar un script en Python capaz de leer un archivo de texto local, enviar su contenido a una instancia remota de Ollama mediante HTTP y obtener como respuesta un resumen automático de exactamente tres líneas.
 
-El objetivo principal fue desarrollar una herramienta simple y flexible que permitiera:
+La práctica estuvo centrada en el paradigma de *Vibe Coding*, donde el rol del desarrollador consiste en definir objetivos, restricciones y comportamiento esperado, mientras que la implementación técnica es generada y refinada mediante asistentes de IA.
 
-- Leer un archivo de texto desde la terminal.
-- Enviar su contenido a una API de Ollama en la red local.
-- Solicitar un resumen automático de exactamente 3 líneas.
-- Mostrar el resultado por pantalla.
-- Manejar errores comunes de ejecución y conectividad.
+Una condición importante de la actividad fue que el código no debía corregirse manualmente: todos los errores detectados durante las pruebas debían reenviarse a la IA para que propusiera nuevas versiones o soluciones.
 
-La interacción con la IA permitió iterar progresivamente sobre el código, agregando mejoras de configuración, manejo de errores y diagnóstico de red.
 
-## Desarrollo del Script
+# Objetivo de la actividad
 
-La primera versión del programa fue diseñada utilizando únicamente librerías estándar de Python:
+El script debía:
 
-- `sys`
-- `os`
-- `json`
-- `urllib`
+* leer un archivo de texto local,
+* conectarse a una API de Ollama accesible por red local,
+* enviar el contenido del archivo,
+* solicitar un resumen de 3 líneas,
+* y mostrar el resultado por pantalla.
 
-El script realizaba las siguientes tareas:
+Además, el sistema debía:
 
-1. Validación del argumento recibido desde terminal.
-2. Verificación de existencia del archivo.
-3. Lectura del contenido en UTF-8.
-4. Construcción del prompt para Ollama.
-5. Envío de una petición HTTP POST hacia `/api/generate`.
-6. Recepción y parseo de la respuesta JSON.
-7. Impresión del resumen generado.
+* funcionar con distintos tipos de archivos de texto,
+* utilizar únicamente librerías estándar o abiertas,
+* permitir configurar IP, puerto y modelo,
+* incluir manejo de errores,
+* y ejecutarse desde terminal.
 
-Además, incluía manejo básico de errores:
+# Desarrollo del proceso
 
-- Archivo inexistente.
-- Error de lectura.
-- Respuesta JSON inválida.
-- Fallos de conexión HTTP.
+El desarrollo se realizó de manera iterativa en distintos días y sesiones, retomando progresivamente el trabajo a medida que aparecían nuevos problemas o necesidades de mejora.
 
-## Mejora de Configuración (Vibe Coding)
+El enfoque utilizado consistió en:
 
-Inicialmente, la IP del servidor Ollama, el puerto y el modelo estaban escritos directamente dentro del código:
+1. generar código mediante prompting,
+2. ejecutar el script,
+3. capturar errores reales desde terminal,
+4. reenviar esos errores a la IA,
+5. solicitar correcciones o mejoras,
+6. volver a probar el sistema.
 
-```python
-OLLAMA_IP = "192.168.1.45"
-OLLAMA_PORT = 11434
-MODEL_NAME = "llama3"
-```
+A lo largo del proceso se trabajó tanto sobre la generación inicial del código como sobre optimizaciones relacionadas con:
 
-Esto obligaba a editar el archivo `.py` cada vez que cambiaba la máquina o el modelo utilizado.
+* conectividad,
+* manejo de errores,
+* calidad de los resúmenes,
+* depuración,
+* limpieza de respuestas,
+* y adaptación a las limitaciones del modelo utilizado.
 
-Para resolver este problema, la IA propuso migrar la configuración hacia:
-
-- argumentos de terminal (`--host`, `--port`, `--model`)
-- variables de entorno (`OLLAMA_HOST`, `OLLAMA_PORT`, `OLLAMA_MODEL`)
-
-Para ello se incorporó la librería estándar `argparse`.
-
-El nuevo diseño permitió ejecutar el programa de distintas maneras.
-
-### Ejemplo usando argumentos
-
-```bash
-python3 resumidor.py licencia.txt --host 192.168.1.45 --port 11434 --model smollm
-```
-
-### Ejemplo usando variables de entorno
-
-```bash
-export OLLAMA_HOST=192.168.1.45
-export OLLAMA_PORT=11434
-export OLLAMA_MODEL=smollm
-
-python3 resumidor.py licencia.txt
-```
-
-## Problemas Encontrados Durante las Pruebas
-
-Durante la primera ejecución apareció el siguiente error:
+# Prompt inicial utilizado
 
 ```text
-TimeoutError: timed out
-```
-
-El script esperaba 30 segundos la respuesta de Ollama y luego finalizaba abruptamente porque el `TimeoutError` no estaba siendo capturado correctamente.
-
-Para solucionarlo, la IA sugirió agregar manejo específico para:
-
-```python
-except TimeoutError:
-```
-
-y también:
-
-```python
-except ConnectionRefusedError:
-```
-
-De esta manera el programa dejó de finalizar con un traceback completo y comenzó a mostrar mensajes de error más amigables para el usuario.
-
-## Diagnóstico de Red
-
-Inicialmente se utilizó:
-
-```bash
---host localhost
-```
-
-Sin embargo, esto generaba timeout.
-
-La IA explicó que:
-
-- `localhost` puede resolver a IPv6 (`::1`)
-- mientras que Podman estaba publicando el puerto únicamente en IPv4 (`0.0.0.0`)
-
-Por ello recomendó utilizar directamente:
-
-```bash
-127.0.0.1
-```
-
-o una IP de red local.
-
-Luego se intentó utilizar:
-
-```bash
-192.168.1.45
-```
-
-pero apareció:
-
-```text
-No route to host
-```
-
-La IA ayudó a interpretar correctamente el error indicando que:
-
-- la IP no existía en la red local
-- o el servidor no estaba encendido
-- o pertenecía a otra subred
-
-Posteriormente se verificó que el contenedor de Ollama estaba ejecutándose localmente mediante:
-
-```bash
-podman ps
-```
-
-La salida observada fue:
-
-```text
-0.0.0.0:11434->11434/tcp
-```
-
-Esto confirmó que:
-
-- el contenedor estaba activo
-- el puerto estaba correctamente publicado
-
-## Identificación de la IP Correcta
-
-La IA indicó que el servidor Ollama estaba ejecutándose en la misma máquina del usuario y sugirió utilizar la IP local real del equipo.
-
-La IP detectada fue:
-
-```text
-192.168.1.199
-```
-
-Entonces se probó:
-
-```bash
-python3 resumidor.py licencia.txt --host 192.168.1.199 --port 11434 --model smollm
-```
-
-## Persistencia del Timeout
-
-Aun utilizando la IP correcta, el modelo continuó respondiendo lentamente y el programa agotó el timeout de 30 segundos.
-
-Esto permitió identificar otro posible problema:
-
-- el modelo `smollm` podía estar tardando demasiado en cargar
-- o el contenedor estaba demorando la inferencia inicial
-
-En esta etapa se decidió modificar manualmente el timeout del código para permitir más tiempo de respuesta.
-
-## Aprendizajes Obtenidos
-
-Durante la actividad se trabajaron varios conceptos importantes.
-
-### Python
-
-- manejo de archivos
-- uso de `argparse`
-- consumo de APIs HTTP
-- parseo JSON
-- manejo de excepciones
-
-### Redes
-
-- diferencias entre `localhost`, `127.0.0.1` e IPs LAN
-- diagnóstico de conectividad
-- uso de `ping`
-- uso de `nc`
-- publicación de puertos con Podman
-
-### IA y Vibe Coding
-
-Se aplicó el paradigma de Vibe Coding:
-
-- construir rápidamente
-- iterar mediante prompting
-- mejorar gradualmente
-- separar configuración de lógica
-- utilizar prompts como mecanismo principal de experimentación
-
-## Conclusión
-
-La interacción con la IA permitió desarrollar un script funcional y modular utilizando únicamente herramientas estándar de Python.
-
-Además del desarrollo del programa, la experiencia permitió comprender:
-
-- cómo se comunica un cliente Python con una API de IA local
-- cómo diagnosticar errores reales de red
-- cómo adaptar una aplicación a entornos distribuidos
-- cómo utilizar prompting iterativo para evolucionar un sistema
-
-La actividad también mostró que muchos errores inicialmente atribuidos al código en realidad provenían de problemas de infraestructura, configuración de red o tiempos de respuesta del modelo.
-
-# Prompts Utilizados Durante el Desarrollo
-
-A continuación se incluyen algunos de los principales prompts utilizados durante la interacción con la IA para desarrollar y mejorar el script `resumidor.py`.
-
-## Prompt Inicial
-
-```text
-Quiero que generes un script en Python utilizando únicamente librerías estándar o de código abierto.
+Quiero que genere un script en Python utilizando únicamente librerías estándar o de código abierto.
 
 El objetivo del script es:
 
 * Leer cualquier archivo de texto indicado por el usuario mediante argumento de terminal.
-* Enviar el contenido de ese archivo a una API local de Ollama que está ejecutándose en una IP y puerto específicos de la red local.
+* Enviar el contenido de ese archivo a una API local de Ollama que está ejecutándose en una IP y puerto específico de la red local.
 * Pedirle al modelo que genere un resumen de exactamente 3 líneas.
 * Mostrar el resumen por pantalla.
 
@@ -259,151 +68,229 @@ Requisitos importantes:
 * El modelo debe poder definirse fácilmente en una variable.
 * El código debe estar comentado y explicado de forma clara porque es para una actividad educativa.
 * Debe incluir manejo básico de errores:
-
   * archivo inexistente
   * error de conexión con Ollama
   * respuesta inválida de la API
 * Debe ejecutarse desde terminal con una sintaxis similar a:
   python resumen.py archivo.txt
-* No uses frameworks complejos.
-* Explicá también cómo ejecutar el script y cómo instalar las dependencias necesarias.
-* Agregá un ejemplo de uso.
+* No utiliza frameworks complejos.
+* Explique también cómo ejecutar el script y cómo instalar las dependencias necesarias.
+* Agregue un ejemplo de uso.
 
 Además:
 
-* La URL de Ollama NO debe ser localhost. Debe quedar preparada para usar una IP de red local y puerto configurable.
+* La URL de Ollama NO debe ser localhost.
+* Debe quedar preparado para usar una IP de red local y puerto configurable.
 * La API de Ollama ya está levantada por otro integrante usando Podman.
-* El código debe seguir el enfoque de “Vibe Coding”: claro, simple y fácil de iterar mediante prompting.
+* El código debe seguir el enfoque de “Vibe Coding”: claro, simple y fácil de iterar mediante indicaciones.
 
 Finalmente:
 
-* Explicá brevemente cómo funciona cada parte del código.
+* Explique brevemente cómo funciona cada parte del código.
 ```
 
-## Prompt para Mejorar la Configuración
+# Uso de asistentes de IA
 
-```text
-la verdad no me gustaria tener que entrar al archivo y cambiar la ollama ip, el puerto y el modelo de nombre
-```
+Durante el desarrollo se utilizaron distintos asistentes de IA de pesos abiertos.
 
-A partir de este prompt, la IA propuso utilizar:
+Inicialmente se trabajó con Hugging Face Chat para generar la primera versión del script y realizar las primeras pruebas.
 
-- argumentos de terminal
-- variables de entorno
-- argparse
+Posteriormente, debido a las limitaciones del plan gratuito, el desarrollo continuó utilizando DeepSeek para seguir iterando sobre:
 
-para evitar modificar el código manualmente.
+* errores de conexión,
+* manejo de excepciones,
+* mejoras del prompt,
+* depuración,
+* y validación de resultados.
 
-## Prompt Relacionado con los Errores
+Las conversaciones no ocurrieron en una única sesión continua, sino en distintos momentos del proceso de desarrollo.
 
-Luego de probar el script se obtuvieron errores de timeout y conectividad, por lo que se enviaron mensajes mostrando la salida de la terminal:
+# Iteración y corrección de errores
 
-```text
-python3 resumidor.py licencia.txt --host localhost --port 11434 --model smollm
-```
+Toda la depuración del proyecto se realizó mediante prompting, respetando la consigna de no modificar manualmente el código.
 
-y posteriormente:
+Entre los principales problemas detectados y corregidos se encontraron:
 
-```text
-python3 resumidor.py licencia.txt --host 192.168.1.45 --port 11434 --model smollm
-```
+## Problemas de conectividad
 
-La IA analizó los mensajes de error y propuso mejoras en el manejo de excepciones y diagnóstico de red.
+Durante las primeras pruebas aparecieron errores relacionados con:
 
-## Uso de Distintas IA Durante el Desarrollo
+* `TimeoutError`
+* `ConnectionRefusedError`
+* uso incorrecto de `localhost`
+* errores HTTP al consultar modelos inexistentes
 
-Durante el desarrollo del script se utilizaron distintas herramientas de inteligencia artificial generativa.
+Para resolverlos, la IA propuso:
 
-La mayor parte del código y del proceso de depuración fue realizada utilizando un modelo accesible desde Hugging Face, el cual fue utilizado para:
+* configuración flexible mediante argumentos CLI y variables de entorno,
+* validaciones de red,
+* manejo explícito de excepciones,
+* y mejoras en los mensajes de error.
 
-- generar la estructura inicial del script
-- mejorar el manejo de errores
-- implementar configuración mediante argumentos y variables de entorno
-- diagnosticar problemas de red y conectividad
-- explicar el funcionamiento del código
-
-Sin embargo, durante la actividad se alcanzó el límite de mensajes disponibles en dicha plataforma, por lo que fue necesario continuar el trabajo utilizando otra IA.
-
-Para el ajuste final del programa se utilizó DeepSeek, específicamente para modificar el tiempo de espera (`timeout`) de la conexión HTTP hacia Ollama.
-
-El prompt enviado a DeepSeek fue:
-
-```text
-¿Podrías darle más de 30 segundos al código para que responda? unos 300 estarian bien
-
-en si lo codigo esta bien, y funciona solo esa modificacion estaria bien, dame todo el codigo, modificando eso, en esta actividad no puedo modificar nada a mano, asi que solo modifica eso, no cambies nada mas del codigo quiero los comentarios exactamente iguales
-```
-
-El cambio solicitado fue aumentar el tiempo de espera desde:
+También se incrementó el tiempo de espera:
 
 ```python
 timeout=30
 ```
 
-hasta aproximadamente:
+a:
 
 ```python
 timeout=300
 ```
 
-Esto permitió darle más tiempo al modelo para responder, especialmente durante la primera inferencia o cuando el contenedor demoraba en procesar solicitudes.
+para permitir que modelos más lentos pudieran responder correctamente.
 
-Posteriormente, una vez corregido el problema de timeout y lograda la conexión correcta con la API de Ollama, el script consiguió generar correctamente un resumen del archivo enviado.
+## Mejora del prompt
 
-Durante una de las pruebas exitosas se ejecutó:
+Uno de los principales problemas detectados fue que algunos modelos devolvían respuestas demasiado largas o ignoraban el formato solicitado.
 
-```bash
-python3 resumidor.py /home/brendauichaques/Documentos/cuento.txt
+Para mejorar esto se realizaron varias iteraciones sobre el prompt enviado a Ollama, buscando:
+
+* forzar exactamente 3 líneas,
+* evitar introducciones innecesarias,
+* mejorar la coherencia,
+* y conservar el desenlace del texto original.
+
+La IA propuso:
+
+* instrucciones más estrictas,
+* ejemplos de formato esperado,
+* reducción de complejidad del prompt,
+* y ajustes de parámetros como:
+
+```python
+temperature: 0.1
+num_predict: 200
 ```
 
-La salida obtenida fue:
+## Problemas con el modelo `smollm`
+
+Durante las pruebas se detectó que el modelo `smollm` tenía dificultades para seguir instrucciones estrictas.
+
+Entre los problemas observados aparecieron:
+
+* respuestas incoherentes,
+* repeticiones,
+* líneas duplicadas,
+* pérdida del desenlace,
+* generación de texto fuera de contexto,
+* e introducciones no deseadas como:
 
 ```text
-🔗 Conectando a Ollama en http://192.168.1.199:11434/api/generate (modelo: smollm)...
-
-==================================================
-RESUMEN (3 líneas)
-==================================================
-Había una vez un pequeño zorro llamado Milo que vivía en un bosque cerca de un río. Aunque todos los animales lo consideraban muy inteligente, Milo tenía un gran problema: nunca terminaba lo que empezaba. Un día quería aprender a pescar, al siguiente intentaba trepar árboles, y después abandonaba todo para perseguir mariposas.
-
-Una mañana, mientras caminaba por el bosque, encontró a una vieja tortuga llamada Alba que llevaba una semilla en el caparazón. Milo se rió y le preguntó por qué caminaba tan lento solo para llevar una pequeña semilla de un lugar a otro. Alba respondió que quería plantarla junto al río para que algún día creciera un árbol que diera sombra a todos los animales.
-
-Milo comprende que era una pérdida de tiempo. Sin embargo, durante las semanas siguientes observó cómo Alba regresaba cada día para regar la semilla. Pasaron las estaciones y, poco a poco, comenzó a crecer un árbol fuerte y alto. En verano, los animales descansaban bajo su sombra y los pájaros hacieron nidos en sus ramas.
-
-Entonces Milo comprendió algo importante: las cosas valiosas necesitan paciencia y constancia. Desde ese día decidió terminar al menor a tarea antes de comenzar otra. Con el tiempo aprendió a pescar y también a construir refugios para el invierno. Aunque seguía siendo curioso y aventurero, ya no abandonaba todo a mitad de camino.
-==================================================
+Este es un resumen de...
 ```
 
-Aunque el script funcionó correctamente y la IA respondió al pedido realizado, durante las pruebas se observó que el modelo `smollm` no siempre respetaba exactamente la restricción de generar únicamente 3 líneas.
+o
 
-A partir de este comportamiento, se continuó iterando mediante prompting para mejorar el resultado del resumen. Entre las mejoras propuestas por la IA se incluyeron:
-
-- prompts más estrictos y específicos
-- instrucciones explícitas indicando “EXACTAMENTE 3 líneas”
-- reducción de creatividad usando parámetros como `temperature`
-- limitación automática de líneas en la salida
-
-También se incorporó un sistema de depuración (`--debug`) solicitado mediante prompting, con el objetivo de visualizar información interna del programa durante la ejecución.
-
-El modo debug permitió mostrar:
-
-- el contenido leído desde el archivo
-- el prompt completo enviado a Ollama
-- el payload JSON generado
-- la respuesta cruda devuelta por el modelo
-- estadísticas de la respuesta (líneas, palabras y caracteres)
-- advertencias cuando el modelo excedía el límite esperado de líneas
-
-El nuevo modo podía ejecutarse de la siguiente manera:
-
-```bash
-python3 resumidor.py licencia.txt --host 192.168.1.199 --port 11434 --model smollm --debug
+```text
+Here are three possible resume texts...
 ```
 
-La incorporación de este sistema de depuración facilitó enormemente el análisis del comportamiento del modelo y permitió comprender con mayor claridad cómo Ollama interpretaba los prompts enviados.
+Luego de varias iteraciones, se concluyó que las limitaciones provenían principalmente del modelo y no del script.
 
-Estas pruebas permitieron comprender mejor cómo pequeños cambios en el prompting afectan directamente el comportamiento del modelo y la calidad de la salida generada.
+La IA sugirió utilizar modelos más robustos como:
+
+* `llama3`
+* `phi3:mini`
+* `mistral`
+
+Sin embargo, algunos de ellos no estaban instalados en el servidor remoto de Ollama, produciendo errores como:
+
+```text
+❌ Error de conexión con Ollama:
+Not Found
+```
+
+## Adaptación del script
+
+Frente a las limitaciones del modelo, se modificó la estrategia del sistema.
+
+En lugar de depender completamente de la respuesta generada por la IA, se incorporaron mecanismos locales de validación y limpieza del resumen.
+
+Se agregaron funciones para:
+
+* eliminar frases introductorias,
+* detectar líneas inválidas,
+* evitar duplicados,
+* reconstruir resúmenes,
+* y extraer oraciones directamente desde el texto original cuando el modelo fallaba.
+
+Entre las funciones implementadas se encuentran:
+
+```python
+extraer_primeras_oraciones()
+```
+
+```python
+limpiar_resumen_smollm()
+```
+
+También se incorporó un modo `--debug` que permitía visualizar:
+
+* contenido leído,
+* prompt enviado,
+* payload JSON,
+* respuesta completa de Ollama,
+* y estadísticas de salida.
+
+# Resultado final
+
+El resultado fue un script funcional llamado `resumidor.py`, desarrollado íntegramente mediante iteración asistida por IA.
+
+El sistema permite:
+
+* resumir archivos de texto utilizando Ollama,
+* conectarse a servidores remotos mediante IP configurable,
+* seleccionar modelos dinámicamente,
+* utilizar modo debug,
+* manejar errores de red y parsing,
+* y limpiar automáticamente respuestas defectuosas.
+
+El proyecto utilizó únicamente librerías estándar de Python, principalmente:
+
+```python
+urllib.request
+urllib.error
+```
+
+para realizar las peticiones HTTP.
+
+Además, durante las pruebas se observó que el sistema funciona mejor con textos cortos o información relativamente pequeña, especialmente cuando se utilizan modelos livianos como `smollm`.
+
+# Enlaces a conversaciones
+
+## Hugging Face Chat
+
+https://huggingface.co/chat/r/FGHv8AK?leafId=a8930567-e6db-432a-8074-d98145681e73
+
+## DeepSeek
+
+https://chat.deepseek.com/share/0k7661gri9xep0zsc3
+
+# Conclusión
+
+La actividad permitió experimentar de forma práctica el paradigma de *Vibe Coding*, utilizando asistentes de IA no solo para generar código, sino también para iterar, depurar y adaptar el sistema frente a errores reales.
+
+El proceso mostró que:
+
+* la calidad del modelo impacta directamente en los resultados,
+* el prompting es una herramienta central pero no suficiente por sí sola,
+* los modelos pequeños pueden tener limitaciones importantes,
+* y los sistemas robustos necesitan validaciones adicionales más allá de la salida generada por IA.
+
+También permitió comprender mejor conceptos relacionados con:
+
+* APIs locales,
+* comunicación HTTP,
+* configuración por red,
+* manejo de excepciones,
+* y automatización mediante Python utilizando únicamente librerías estándar.
+
+feature/scripting
+Más allá del resultado técnico, la experiencia sirvió para entender que el desarrollo asistido por IA sigue requiriendo supervisión humana, análisis crítico y toma de decisiones arquitectónicas durante todo el proceso.
 
 De esta manera, el desarrollo final del script fue resultado de un proceso iterativo utilizando múltiples asistentes de IA, manteniendo siempre el enfoque de Vibe Coding y experimentación progresiva mediante prompting.
 
 
+main
