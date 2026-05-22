@@ -292,5 +292,7 @@ Más allá del resultado técnico, la experiencia sirvió para entender que el d
 
 De esta manera, el desarrollo final del script fue resultado de un proceso iterativo utilizando múltiples asistentes de IA, manteniendo siempre el enfoque de Vibe Coding y experimentación progresiva mediante prompting.
 
+# Capturas de pantalla de algunas pruebas
+![pruebas](<Captura desde 2026-05-22 17-11-00.png>)
 
 main
