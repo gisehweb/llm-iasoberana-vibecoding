@@ -42,8 +42,8 @@ En la siguiente imagen se puede observar parte del proceso:
 ![Historial de commits y archivos](img/git_log.PNG)
 
 ## Reflexión Soberana
-Procesar información localmente con Ollama en Podman mostró ventajas claras:
+El trabajo en equipo nos permitió comprobar que la soberanía tecnológica no es solo un concepto, sino una práctica concreta. Cada integrante tuvo que asumir un rol distinto y complementario: levantar la infraestructura con Podman y Ollama, generar el script mediante prompting con IA, y mantener el repositorio integrado y ordenado. Esto nos obligó a coordinar ramas, resolver conflictos cada uno de nosotros creo un informe.md que detallara lo que hizo cada uno, tambien creamos uno general resumiendo nuestras partes en el proyecto.
 
-Ventajas: Control total de la infraestructura, soberanía sobre los datos, independencia de servicios privativos, y posibilidad de auditar cada paso.
+La experiencia mostró que la ventaja principal fue aprender a construir un sistema completo sin depender de servicios externos, controlando cada paso desde la instalación hasta la automatización. También nos dio independencia para experimentar con distintos modelos y validar resultados en nuestro propio entorno.
 
-Desventajas: Limitaciones de hardware (CPU/RAM), necesidad de configurar manualmente el entorno y resolver errores de conexión o rutas.
+Las dificultades estuvieron en la práctica: hardware limitado, errores de conexión, modelos que no cumplían con las instrucciones, y la necesidad de iterar varias veces con la IA para lograr un script estable. Resolver estos problemas nos obligó a trabajar de manera colaborativa, documentar cada paso y apoyarnos mutuamente en las ramas de GitHub.
