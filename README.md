@@ -1,6 +1,6 @@
 # llm-iasoberana-vibecoding
 Este repositorio integra las tareas de los tres integrantes del equipo, cada uno con su
-propio informe y rama de trabajo. La meta fue construir un sistema de resumen automático
+rama de trabajo. La meta fue construir un sistema de resumen automático
 con Ollama en Podman, gestionado en GitHub y desarrollado mediante prompting con IA.
 
 # LLM IA Soberana & Vibe Coding
